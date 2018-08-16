@@ -1,0 +1,26 @@
+{
+  "name": "scales-canvas",
+  "version": "1.0.0",
+  "description": "Enriching my (novice and rudimentary) understanding of music theory by illustrating how to build a series of chords as successive triads of notes from a scale.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "brow": "browserify public/scripts/draw.js -o public/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zackstout/Scales-Chords-canvas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zackstout/Scales-Chords-canvas/issues"
+  },
+  "homepage": "https://github.com/zackstout/Scales-Chords-canvas#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "tone": "^0.12.80"
+  }
+}
