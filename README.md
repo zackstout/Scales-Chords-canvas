@@ -18,3 +18,7 @@ The data seems to suggest that the lower the numbers in the fractional expressio
 Another idea is to save every chord progression to a database (every 3-, 4-, and 5-note chord from every scale -- A minor, A melodic minor, B major, ...). Then, for a given chord, we could find all the scales in which it appears as a triad (or quad-/pentad).
 
 And that's not even taking into account different inversions (or "voicings"). We're also leaving out modes -- but I feel that's kind of an orthogonal issue, because changing the mode wouldn't change the underlying chord structure (or would it, by modulating the voicing?).
+
+Ah, the secret of the frequency ratios isn't that deep: for the fifth, 7 semitones up, it's 2^(7/12) = 1.5; for the fourth, 5 semitones up, we have 2^(5/12) = 1.333. And we hear these ratios as pleasing because the waves line up (they line up better the smaller the integers we need to express the fraction, 3/2 or 4/3, etc.). Here's a rough picture of the relationship:
+
+![screen shot 2018-08-18 at 4 36 38 pm](https://user-images.githubusercontent.com/29472568/44303376-f4f9ac00-a304-11e8-96e1-c10a7db88f41.png)

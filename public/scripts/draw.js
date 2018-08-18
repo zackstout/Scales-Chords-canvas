@@ -1,10 +1,11 @@
 
-let w1, h1, w2, h2, staged, grabbing_staged, opts, opts2;
+let w1, h1, w2, h2, staged, grabbing_staged, opts, opts2, w3, h3;
 const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const note_objs = notes.map(n => {
   return {name: n, active: false, pos: {x: 0, y: 0}};
 });
 let all_note_objs = [];
+// const { inputs, handleInput } = require('./inputs.js');
 
 const major = [2, 2, 1, 2, 2, 2, 1];
 const natural_minor = [2, 1, 2, 2, 1, 2, 2];
@@ -21,52 +22,68 @@ console.log(note_objs);
 new p5(inputs, 'inputs');
 new p5(topSketch, 'top');
 new p5(btmSketch, 'btm');
+new p5(freqs, 'freqs');
+
 
 // ===============================================================================================
 
-// Sample input: ['C', 'E', 'G'], output: 'C [major]'
-// Should be able to take variable number of inputs, from 3 to 5:
-function getChordFromTriad(a, b, c) {
-  const root = notes.indexOf(a);
-  const med = notes.indexOf(b);
-  const end = notes.indexOf(c);
-  // const span = Math.max(in1, in2, in3) - Math.min(in1, in2, in3); // This is 7 for CEG, reflecting that there are 7 semitones between C and G.
-  const root_to_med = Math.min(Math.abs(root - med), Math.abs(med + 12 - root));
-  const med_to_end = Math.min(Math.abs(med - end), Math.abs(end + 12 - med));
-  // console.log(root_to_med, med_to_end);
-  let chord_type;
-  // What about 2-4 and 4-2?
-  if (root_to_med == 4 && med_to_end == 3) {
-    chord_type = 'Maj';
-  } else if (root_to_med == 3 && med_to_end == 4) {
-    chord_type = 'min';
-  } else if (root_to_med == 3 && med_to_end == 3) {
-    chord_type = 'dim';
-  } else if (root_to_med == 4 && med_to_end == 4) {
-    chord_type = 'aug';
-  }
-  return (`${a} ${chord_type}`);
+function freqs(p) {
+  p.setup = function() {
+    w3 = 800;
+    h3 = 500;
+    p.createCanvas(w3, h3);
+    p.background('lightgray');
+    const xScale = 12;
+    const yScale = 1;
+    const mar = 50;
+    p.push();
+    p.translate(w3/2, h3/2);
+    p.line(-w3/2 + mar, -h3/2, -w3/2 + mar, h3/2);
+    p.line(-w3/2, -h3/2 + mar, w3/2, -h3/2 + mar);
+    p.pop();
+
+    p.push();
+    p.translate(50, 50);
+
+    const ratio = h3 - (mar + 10);
+    // first data point:
+    p.ellipse(0, ratio, 5);
+    for (let i=1; i < 13; i++) {
+      // axis ticks:
+      p.stroke('black');
+      const x = i * (w3 - (mar + 10))/12;
+      p.line(x, -5, x, 5);
+
+      // data points:
+      const y = Math.pow(2, i / 12);
+      // console.log(y, ratio);
+      p.text('1', -15, ratio);
+      p.noStroke();
+      if (i == 5) {
+        p.fill('red');
+        p.stroke('red');
+        p.line(x, 0, x, ratio/y);
+        p.line(0, ratio/y, x, ratio/y);
+        p.text('5h', x, -10);
+        p.text('3/4', -20, ratio/y);
+      } else if (i == 7) {
+        p.fill('blue');
+        p.stroke('blue');
+        p.line(x, 0, x, ratio/y);
+        p.line(0, ratio/y, x, ratio/y);
+        p.text('7h', x, -10);
+        p.text('2/3', -20, ratio/y);
+      } else {
+        p.fill('black');
+      }
+      p.ellipse(x, ratio / y, 5);
+    }
+    p.pop();
+
+  };
 }
 
 // ===============================================================================================
-
-function drawTopBase(p) {
-  p.background('lightgrey');
-  p.line(10, h1/3, w1 - 10, h1/3);
-
-  for (let i=0; i<13; i++) {
-    const int = (w1 - 20) / 12;
-    const x = int * i;
-    const note_obj = note_objs[i % 12];
-    note_obj.pos.x = x + 10;
-    note_obj.pos.y = h1/3;
-    const col = note_obj.active ? 'blue' : 'white';
-    p.fill(col);
-    p.ellipse(note_obj.pos.x, note_obj.pos.y, 10);
-    p.text(note_obj.name, x + 5, h1*2/3);
-  }
-}
-
 
 function inputs(p) {
   p.setup = function() {
@@ -92,8 +109,6 @@ function inputs(p) {
     console.log('hi');
   };
 }
-
-
 
 function handleInput() {
   const key = opts.value();
@@ -125,10 +140,52 @@ function handleInput() {
       n.active = false;
     }
   });
-  // console.log(all_note_objs);
 }
 
 // ===============================================================================================
+
+// Sample input: ['C', 'E', 'G'], output: 'C [major]'
+// Should be able to take variable number of inputs, from 3 to 5:
+function getChordFromTriad(a, b, c) {
+  const root = notes.indexOf(a);
+  const med = notes.indexOf(b);
+  const end = notes.indexOf(c);
+  // const span = Math.max(in1, in2, in3) - Math.min(in1, in2, in3); // This is 7 for CEG, reflecting that there are 7 semitones between C and G.
+  const root_to_med = Math.min(Math.abs(root - med), Math.abs(med + 12 - root));
+  const med_to_end = Math.min(Math.abs(med - end), Math.abs(end + 12 - med));
+  // console.log(root_to_med, med_to_end);
+  let chord_type;
+  // What about 2-4 and 4-2? Oh i think maybe those only appeared because of an error...?
+  if (root_to_med == 4 && med_to_end == 3) {
+    chord_type = 'Maj';
+  } else if (root_to_med == 3 && med_to_end == 4) {
+    chord_type = 'min';
+  } else if (root_to_med == 3 && med_to_end == 3) {
+    chord_type = 'dim';
+  } else if (root_to_med == 4 && med_to_end == 4) {
+    chord_type = 'aug';
+  }
+  return (`${a} ${chord_type}`);
+}
+
+// ===============================================================================================
+
+function drawTopBase(p) {
+  p.background('lightgrey');
+  p.line(10, h1/3, w1 - 10, h1/3);
+
+  for (let i=0; i<13; i++) {
+    const int = (w1 - 20) / 12;
+    const x = int * i;
+    const note_obj = note_objs[i % 12];
+    note_obj.pos.x = x + 10;
+    note_obj.pos.y = h1/3;
+    const col = note_obj.active ? 'blue' : 'white';
+    p.fill(col);
+    p.ellipse(note_obj.pos.x, note_obj.pos.y, 10);
+    p.text(note_obj.name, x + 5, h1*2/3);
+  }
+}
 
 function topSketch(p) {
   p.setup = function() {
@@ -184,8 +241,6 @@ function drawBtmBase(p) {
   }
 }
 
-// ===============================================================================================
-
 function drawBtmRow(p, row) {
   const height = 70;
 
@@ -197,12 +252,10 @@ function drawBtmRow(p, row) {
   for (let i=0; i < active.length; i++) {
     const check = [row, row + 2, row + 4];
     if (check.includes(i)) {
-      indices.push(active[i].index); // Could also push on name of the note here to feed into getChordFromTriad
-      names.push(active[i].name);
+      indices.push(active[i].index);
+      names.push(active[i].name); // Pushing on name of the note here to feed into getChordFromTriad
     }
   }
-
-  // console.log(names);
 
   for (let i=0; i<20; i++) {
     const n = note_objs[i % 12];
@@ -221,8 +274,6 @@ function drawBtmRow(p, row) {
   p.fill('green');
   p.text(getChordFromTriad(...names), w2 - 100, 30 + height + row*height);
 }
-
-// ===============================================================================================
 
 function btmSketch(p) {
   p.setup = function() {
