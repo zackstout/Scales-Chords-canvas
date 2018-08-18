@@ -24412,19 +24412,18 @@ new p5(freqs, 'freqs');
 // ===============================================================================================
 
 const freq_ratios = [
-  {name: 'Minor Second', ratio: 1},
-  {name: 'Third', ratio: 1},
-  {name: 'Minor Third', ratio: 1},
-  {name: 'Major Third', ratio: 1},
-  {name: 'Perfect Fourth', ratio: 1},
-  {name: 'Tritone', ratio: 1},
-  {name: 'Perfect Fifth', ratio: 1},
-  {name: 'Minor Sixth', ratio: 1},
-  {name: 'Major Sixth', ratio: 1},
-  {name: 'Minor Seventh', ratio: 1},
-  {name: 'Major Seventh', ratio: 1},
+  {name: 'Minor Second', ratio: '~ 19/20'},
+  {name: 'Second', ratio: '~ 8/9'},
+  {name: 'Minor Third', ratio: '~ 5/6'},
+  {name: 'Major Third', ratio: '~ 4/5'},
+  {name: 'Perfect Fourth', ratio: '3/4'}, // 5h, and 2 ^ (-5/12) = 0.75
+  {name: 'Tritone', ratio: '~~ 5/7'},
+  {name: 'Perfect Fifth', ratio: '2/3'},
+  {name: 'Minor Sixth', ratio: '~ 7/11'},
+  {name: 'Major Sixth', ratio: '~ 3/5'},
+  {name: 'Minor Seventh', ratio: '~ 5/9'},
+  {name: 'Major Seventh', ratio: '> 1/2'},
   {name: 'Octave', ratio: '1/2'},
-
 ];
 
 // Remember to pass in ratio/y, not just y:
@@ -24437,7 +24436,7 @@ function drawLinesForDataPoint(i, y, p) { // Pass in i instead of x so that we h
   p.line(x, 0, x, new_y);
   p.line(0, new_y, x, new_y);
   p.text(`${i}h`, x, -10);
-  p.text('3/4', -20, new_y);
+  p.text(freq_ratios[i-1].ratio, -20, new_y);
   p.text(freq_ratios[i-1].name, (w3 - (mar + 10))/2, -30);
 }
 
