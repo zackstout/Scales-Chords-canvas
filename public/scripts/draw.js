@@ -1,20 +1,24 @@
 
-let w1, h1, w2, h2, staged, grabbing_staged;
+let w1, h1, w2, h2, staged, grabbing_staged, opts, opts2;
 const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const note_objs = notes.map(n => {
   return {name: n, active: false, pos: {x: 0, y: 0}};
 });
 let all_note_objs = [];
 
+const major = [2, 2, 1, 2, 2, 2, 1];
+const natural_minor = [2, 1, 2, 2, 1, 2, 2];
+const harmonic_minor = [2, 1, 2, 2, 1, 3, 1];
+const melodic_minor = [2, 1, 2, 2, 2, 2, 1];
+
 const Tone = require('Tone');
 
 console.log(note_objs);
-const synth = new Tone.Synth().toMaster();
+// const synth = new Tone.Synth().toMaster();
 // synth.triggerAttackRelease('E4', '8n');
 // synth.triggerAttackRelease('G4', '8n');
 
-
-
+new p5(inputs, 'inputs');
 new p5(topSketch, 'top');
 new p5(btmSketch, 'btm');
 
@@ -31,6 +35,7 @@ function getChordFromTriad(a, b, c) {
   const med_to_end = Math.min(Math.abs(med - end), Math.abs(end + 12 - med));
   // console.log(root_to_med, med_to_end);
   let chord_type;
+  // What about 2-4 and 4-2?
   if (root_to_med == 4 && med_to_end == 3) {
     chord_type = 'Maj';
   } else if (root_to_med == 3 && med_to_end == 4) {
@@ -60,6 +65,67 @@ function drawTopBase(p) {
     p.ellipse(note_obj.pos.x, note_obj.pos.y, 10);
     p.text(note_obj.name, x + 5, h1*2/3);
   }
+}
+
+
+function inputs(p) {
+  p.setup = function() {
+    // const input = p.createInput();
+    opts = p.createSelect();
+    for (let i=0; i < notes.length; i++) {
+      opts.option(notes[i]);
+    }
+    opts.position(20, 30);
+
+    opts2 = p.createSelect();
+    opts2.option('Major');
+    opts2.option('Natural minor');
+    opts2.option('Harmonic minor');
+    opts2.option('Melodic minor');
+    opts2.position(70, 30);
+
+    opts.changed(handleInput);
+    opts2.changed(handleInput);
+
+    // const sub = p.createButton('submit');
+
+    console.log('hi');
+  };
+}
+
+
+
+function handleInput() {
+  const key = opts.value();
+  const scale = opts2.value();
+  console.log(key, scale);
+  let real_scale;
+  switch(scale) {
+    case 'Major': real_scale = major; break;
+    case 'Natural minor': real_scale = natural_minor; break;
+    case 'Harmonic minor': real_scale = harmonic_minor; break;
+    case 'Melodic minor': real_scale = melodic_minor; break;
+  }
+
+  console.log(real_scale);
+  let current_index = notes.indexOf(key); // starting point
+
+  let result = [];
+  for (let i=0; i < real_scale.length; i++) {
+    result.push(notes[current_index]);
+    current_index = (current_index + real_scale[i]) % 12;
+  }
+  console.log(result);
+
+
+  note_objs.forEach(n => {
+    if (result.includes(n.name)) {
+      n.active = true;
+    } else {
+      n.active = false;
+    }
+  });
+  // console.log(all_note_objs);
 }
 
 // ===============================================================================================
@@ -92,7 +158,7 @@ function topSketch(p) {
     if (grabbing_staged) {
       staged.active = !staged.active;
     }
-    synth.triggerAttackRelease('E4', '8n');
+    // synth.triggerAttackRelease('E4', '8n');
   };
 
 
@@ -152,7 +218,7 @@ function drawBtmRow(p, row) {
     p.ellipse(x + 10, 30 + height + row * height, 10);
     p.text(n.name, x + 5, 50 + height + row * height);
   }
-
+  p.fill('green');
   p.text(getChordFromTriad(...names), w2 - 100, 30 + height + row*height);
 }
 
