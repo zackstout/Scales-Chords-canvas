@@ -27,15 +27,88 @@ new p5(freqs, 'freqs');
 
 // ===============================================================================================
 
+const freq_ratios = [
+  {name: 'Minor Second', ratio: 1},
+  {name: 'Third', ratio: 1},
+  {name: 'Minor Third', ratio: 1},
+  {name: 'Major Third', ratio: 1},
+  {name: 'Perfect Fourth', ratio: 1},
+  {name: 'Tritone', ratio: 1},
+  {name: 'Perfect Fifth', ratio: 1},
+  {name: 'Minor Sixth', ratio: 1},
+  {name: 'Major Sixth', ratio: 1},
+  {name: 'Minor Seventh', ratio: 1},
+  {name: 'Major Seventh', ratio: 1},
+  {name: 'Octave', ratio: '1/2'},
+
+];
+
+// Remember to pass in ratio/y, not just y:
+function drawLinesForDataPoint(i, y, p) { // Pass in i instead of x so that we have i here.
+  p.fill('red');
+  p.stroke('red');
+  const ratio = h3 - (mar + 10);
+  const x = i * (w3 - (mar + 10))/12;
+  const new_y = ratio/y;
+  p.line(x, 0, x, new_y);
+  p.line(0, new_y, x, new_y);
+  p.text(`${i}h`, x, -10);
+  p.text('3/4', -20, new_y);
+  p.text(freq_ratios[i-1].name, (w3 - (mar + 10))/2, -30);
+}
+
+let mar;
+let staged_i = 5;
+
 function freqs(p) {
   p.setup = function() {
     w3 = 800;
     h3 = 500;
     p.createCanvas(w3, h3);
     p.background('lightgray');
-    const xScale = 12;
-    const yScale = 1;
-    const mar = 50;
+    mar = 70;
+    p.push();
+    p.translate(w3/2, h3/2);
+    p.line(-w3/2 + mar, -h3/2, -w3/2 + mar, h3/2);
+    p.line(-w3/2, -h3/2 + mar, w3/2, -h3/2 + mar);
+    p.pop();
+
+    p.push();
+    p.translate(50, 50);
+
+    const ratio = h3 - (mar + 10);
+    // First data point:
+    p.ellipse(0, ratio, 5);
+
+    for (let i=1; i < 13; i++) {
+      // Axis ticks:
+      p.stroke('black');
+      const x = i * (w3 - (mar + 10))/12;
+      p.line(x, -5, x, 5);
+
+      // Data points:
+      const y = Math.pow(2, i / 12);
+      // console.log(y, ratio);
+      p.text('1', -15, ratio);
+      p.noStroke();
+      p.ellipse(x, ratio / y, 5);
+    }
+    p.pop();
+
+  };
+
+  p.mouseMoved = function() {
+    const x_from_origin = p.mouseX - 50;
+    const bar_width = (w3 - (mar + 10))/12;
+    const i_from_origin = Math.floor((x_from_origin + bar_width/2) / bar_width); // adding bar_width/2 so that it changes when in the middle of two ticks, not as crossing over a tick.
+    // console.log(i_from_origin);
+    staged_i = i_from_origin;
+
+  };
+
+  p.draw = function() {
+    p.background('lightgray');
+    mar = 50;
     p.push();
     p.translate(w3/2, h3/2);
     p.line(-w3/2 + mar, -h3/2, -w3/2 + mar, h3/2);
@@ -48,6 +121,7 @@ function freqs(p) {
     const ratio = h3 - (mar + 10);
     // first data point:
     p.ellipse(0, ratio, 5);
+
     for (let i=1; i < 13; i++) {
       // axis ticks:
       p.stroke('black');
@@ -59,27 +133,14 @@ function freqs(p) {
       // console.log(y, ratio);
       p.text('1', -15, ratio);
       p.noStroke();
-      if (i == 5) {
-        p.fill('red');
-        p.stroke('red');
-        p.line(x, 0, x, ratio/y);
-        p.line(0, ratio/y, x, ratio/y);
-        p.text('5h', x, -10);
-        p.text('3/4', -20, ratio/y);
-      } else if (i == 7) {
-        p.fill('blue');
-        p.stroke('blue');
-        p.line(x, 0, x, ratio/y);
-        p.line(0, ratio/y, x, ratio/y);
-        p.text('7h', x, -10);
-        p.text('2/3', -20, ratio/y);
-      } else {
-        p.fill('black');
+
+      if (i == staged_i) {
+        drawLinesForDataPoint(i, y, p);
       }
+      p.fill('black');
       p.ellipse(x, ratio / y, 5);
     }
     p.pop();
-
   };
 }
 
