@@ -24456,6 +24456,7 @@ function topSketch(p) {
     drawTopBase(p);
   };
 
+
   p.mouseMoved = function() {
     grabbing_staged = false;
     note_objs.forEach(n => {
@@ -24470,13 +24471,14 @@ function topSketch(p) {
     });
   };
 
+
   p.mouseClicked = function() {
     if (grabbing_staged) {
       staged.active = !staged.active;
     }
     synth.triggerAttackRelease('E4', '8n');
-
   };
+
 
   p.draw = function() {
     drawTopBase(p);
@@ -24505,17 +24507,22 @@ function drawBtmBase(p) {
 function drawBtmRow(p, row) {
   const height = 70;
 
-  let indices = [];
+  let indices = [];  // Holds the current chord
+  let names = [];
   const active = all_note_objs.filter(n => n.active);
 
+  // Prepare the current triad:
   for (let i=0; i < active.length; i++) {
     const check = [row, row + 2, row + 4];
     if (check.includes(i)) {
       indices.push(active[i].index); // Could also push on name of the note here to feed into getChordFromTriad
+      names.push(active[i].name);
     }
   }
 
-  for (let i=0; i<25; i++) {
+  // console.log(names);
+
+  for (let i=0; i<20; i++) {
     const n = note_objs[i % 12];
     const int = (w2 - 20) / 24;
     const x = int * i;
@@ -24529,6 +24536,8 @@ function drawBtmRow(p, row) {
     p.ellipse(x + 10, 30 + height + row * height, 10);
     p.text(n.name, x + 5, 50 + height + row * height);
   }
+
+  p.text(getChordFromTriad(...names), w2 - 100, 30 + height + row*height);
 }
 
 // ===============================================================================================
@@ -24543,8 +24552,8 @@ function btmSketch(p) {
 
   p.draw = function() {
     p.background('lightgray');
-
     drawBtmBase(p);
+
     for (let i=0; i < 7; i++) {
       drawBtmRow(p, i);
     }
