@@ -24389,8 +24389,11 @@ const note_objs = notes.map(n => {
   return {name: n, active: false, pos: {x: 0, y: 0}};
 });
 let all_note_objs = [];
+let toggleSound, current_scale;
 // const { inputs, handleInput } = require('./inputs.js');
 
+let pattern;
+// 1 is a halfstep (or semitone), 2 a whole step.
 const major = [2, 2, 1, 2, 2, 2, 1];
 const natural_minor = [2, 1, 2, 2, 1, 2, 2];
 const harmonic_minor = [2, 1, 2, 2, 1, 3, 1];
@@ -24399,9 +24402,47 @@ const melodic_minor = [2, 1, 2, 2, 2, 2, 1];
 const Tone = require('Tone');
 
 console.log(note_objs);
-// const synth = new Tone.Synth().toMaster();
+const synth = new Tone.Synth().toMaster();
+
+let audio_on = false;
 // synth.triggerAttackRelease('E4', '8n');
 // synth.triggerAttackRelease('G4', '8n');
+// var seq = new Tone.Sequence(function() {}, ["C3", "Eb3", "F4", "Bb4"], "8n");
+
+// var part = new Tone.Part(function(time, note){
+// 	//the notes given as the second element in the array
+// 	//will be passed in as the second argument
+// 	synth.triggerAttackRelease(note, "8n", time);
+// }, [[0, "C2"], ["0:2", "C3"], ["0:3:2", "G2"]]);
+
+
+// var snarePart = new Tone.Loop(function(time){
+//   synth.triggerAttackRelease('E4', time);
+// }, "2n").start("4n");
+// Tone.Transport.start("+0.1");
+// part.start();
+
+// var seq = new Tone.Sequence(function(time, note){
+// 	console.log(note);
+// //straight quater notes
+// }, ["C4", "E4", "G4", "A4"], "4n");
+//
+// setTimeout(seq, 200);
+
+
+pattern = new Tone.Pattern(function(time, note){
+	synth.triggerAttackRelease(note, 0.4);
+}, ["C4", "E4", "G4", "A4"]);
+// pattern.start(0);
+
+
+// var part = new Tone.Part(function(time, pitch){
+// 	synth.triggerAttackRelease(pitch, "8n", time);
+// }, [["0", "C3"], ["2n", "G3"], ["4n", "F3"], ["6n", "C3"]]);
+
+// part.start("0"); // tells how long to wait before it starts.
+Tone.Transport.start("+0.1");
+
 
 new p5(inputs, 'inputs');
 new p5(topSketch, 'top');
@@ -24426,6 +24467,9 @@ const freq_ratios = [
   {name: 'Octave', ratio: '1/2'},
 ];
 
+let mar;
+let staged_i = 5;
+
 // Remember to pass in ratio/y, not just y:
 function drawLinesForDataPoint(i, y, p) { // Pass in i instead of x so that we have i here.
   p.fill('red');
@@ -24436,12 +24480,9 @@ function drawLinesForDataPoint(i, y, p) { // Pass in i instead of x so that we h
   p.line(x, 0, x, new_y);
   p.line(0, new_y, x, new_y);
   p.text(`${i}h`, x, -10);
-  p.text(freq_ratios[i-1].ratio, -20, new_y);
+  p.text(freq_ratios[i-1].ratio, -35, new_y);
   p.text(freq_ratios[i-1].name, (w3 - (mar + 10))/2, -30);
 }
-
-let mar;
-let staged_i = 5;
 
 function freqs(p) {
   p.setup = function() {
@@ -24548,10 +24589,30 @@ function inputs(p) {
     opts.changed(handleInput);
     opts2.changed(handleInput);
 
-    // const sub = p.createButton('submit');
-
-    console.log('hi');
+    toggleSound = p.createButton('Sound on');
+    toggleSound.position(200, 30);
+    toggleSound.mousePressed(handlePress);
+    // console.log('hi');
   };
+}
+
+function handlePress() {
+  // console.log('hi');
+
+  let notes_to_play = current_scale.map(n => n + '4');
+  if (audio_on) {
+    pattern.stop();
+    toggleSound.html('Sound on');
+  } else {
+
+    pattern = new Tone.Pattern(function(time, note){
+    	synth.triggerAttackRelease(note, 0.4);
+    }, notes_to_play);
+    pattern.start();
+    toggleSound.html('Silence');
+
+  }
+  audio_on = !audio_on;
 }
 
 function handleInput() {
@@ -24575,6 +24636,8 @@ function handleInput() {
     current_index = (current_index + real_scale[i]) % 12;
   }
   console.log(result);
+
+  current_scale = result;
 
 
   note_objs.forEach(n => {
