@@ -3,7 +3,7 @@
 Enriching my (novice and rudimentary) understanding of music theory by illustrating how to build a series of chords as successive triads of notes from a scale.
 
 ## Screenshot:
-![screen shot 2018-08-15 at 8 55 07 pm](https://user-images.githubusercontent.com/29472568/44182693-98f91280-a0cd-11e8-9e44-8d3db3e0e288.png)
+![screen shot 2018-08-18 at 7 10 36 pm](https://user-images.githubusercontent.com/29472568/44304199-760f6e00-a31a-11e8-88f4-35228bfd3270.png)
 
 ## Using Browserify and Watchify
 - Instead of running `browserify in_file -o out_file` every time to recompile our script, we can use `watchify`.
@@ -19,6 +19,8 @@ Another idea is to save every chord progression to a database (every 3-, 4-, and
 
 And that's not even taking into account different inversions (or "voicings"). We're also leaving out modes -- but I feel that's kind of an orthogonal issue, because changing the mode wouldn't change the underlying chord structure (or would it, by modulating the voicing?).
 
-Ah, the secret of the frequency ratios isn't that deep: for the fifth, 7 semitones up, it's 2^(7/12) = 1.5; for the fourth, 5 semitones up, we have 2^(5/12) = 1.333. And we hear these ratios as pleasing because the waves line up (they line up better the smaller the integers we need to express the fraction, 3/2 or 4/3, etc.). Here's a rough picture of the relationship:
+Ah, the secret of the frequency ratios isn't that deep: for the fifth, 7 semitones up, it's 2^(7/12) = 1.5; for the fourth, 5 semitones up, we have 2^(5/12) = 1.333. And we hear these ratios as pleasing because the waves line up (they line up better the smaller the integers we need to express the fraction, 3/2 or 4/3, etc.). Here's a picture of the relationship (I've since made this graph interactive):
 
 ![screen shot 2018-08-18 at 4 36 38 pm](https://user-images.githubusercontent.com/29472568/44303376-f4f9ac00-a304-11e8-96e1-c10a7db88f41.png)
+
+- Note to self, it would be a good exercise to refactor this code into self-sufficient modules.

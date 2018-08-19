@@ -24407,48 +24407,19 @@ const synth = new Tone.Synth().toMaster();
 let audio_on = false;
 // synth.triggerAttackRelease('E4', '8n');
 // synth.triggerAttackRelease('G4', '8n');
-// var seq = new Tone.Sequence(function() {}, ["C3", "Eb3", "F4", "Bb4"], "8n");
-
-// var part = new Tone.Part(function(time, note){
-// 	//the notes given as the second element in the array
-// 	//will be passed in as the second argument
-// 	synth.triggerAttackRelease(note, "8n", time);
-// }, [[0, "C2"], ["0:2", "C3"], ["0:3:2", "G2"]]);
-
-
-// var snarePart = new Tone.Loop(function(time){
-//   synth.triggerAttackRelease('E4', time);
-// }, "2n").start("4n");
-// Tone.Transport.start("+0.1");
-// part.start();
-
-// var seq = new Tone.Sequence(function(time, note){
-// 	console.log(note);
-// //straight quater notes
-// }, ["C4", "E4", "G4", "A4"], "4n");
-//
-// setTimeout(seq, 200);
-
 
 pattern = new Tone.Pattern(function(time, note){
 	synth.triggerAttackRelease(note, 0.4);
 }, ["C4", "E4", "G4", "A4"]);
 // pattern.start(0);
 
-
-// var part = new Tone.Part(function(time, pitch){
-// 	synth.triggerAttackRelease(pitch, "8n", time);
-// }, [["0", "C3"], ["2n", "G3"], ["4n", "F3"], ["6n", "C3"]]);
-
 // part.start("0"); // tells how long to wait before it starts.
 Tone.Transport.start("+0.1");
-
 
 new p5(inputs, 'inputs');
 new p5(topSketch, 'top');
 new p5(btmSketch, 'btm');
 new p5(freqs, 'freqs');
-
 
 // ===============================================================================================
 
@@ -24543,18 +24514,17 @@ function freqs(p) {
     p.translate(50, 50);
 
     const ratio = h3 - (mar + 10);
-    // first data point:
+    // First data point:
     p.ellipse(0, ratio, 5);
 
     for (let i=1; i < 13; i++) {
-      // axis ticks:
+      // Axis ticks:
       p.stroke('black');
       const x = i * (w3 - (mar + 10))/12;
       p.line(x, -5, x, 5);
 
-      // data points:
+      // Data points:
       const y = Math.pow(2, i / 12);
-      // console.log(y, ratio);
       p.text('1', -15, ratio);
       p.noStroke();
 
@@ -24596,9 +24566,8 @@ function inputs(p) {
   };
 }
 
+// Note, this will only reset the scale when you click the button, not any time you change the scale. Should fix that.
 function handlePress() {
-  // console.log('hi');
-
   let notes_to_play = current_scale.map(n => n + '4');
   if (audio_on) {
     pattern.stop();
@@ -24610,7 +24579,6 @@ function handlePress() {
     }, notes_to_play);
     pattern.start();
     toggleSound.html('Silence');
-
   }
   audio_on = !audio_on;
 }
@@ -24724,7 +24692,6 @@ function topSketch(p) {
     }
     // synth.triggerAttackRelease('E4', '8n');
   };
-
 
   p.draw = function() {
     drawTopBase(p);
